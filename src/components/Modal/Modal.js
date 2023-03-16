@@ -1,43 +1,40 @@
-import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 
-import { ModalBackdrop, ModalContent } from './Modal.styled'
+import { ModalBackdrop, ModalContent } from './Modal.styled';
 
-export class Modal extends Component {
+export const Modal = ({ closeModal, tags, children }) => {
+  useEffect(() => {
+    window.addEventListener('keydown', onEscPress);
 
-    componentDidMount() { 
-        window.addEventListener('keydown', this.onEscPress)
+    return () => {
+      window.removeEventListener('keydown', onEscPress);
+    };
+  });
+
+  const onEscPress = e => {
+    if (e.code === 'Escape') {
+      closeModal();
     }
+  };
 
-    componentWillUnmount() { 
-        window.removeEventListener('keydown', this.onEscPress)
+  const onBackdropClick = e => {
+    if (e.target === e.currentTarget) {
+      closeModal();
     }
-    
-    onEscPress = (e) => {
-        if (e.code === 'Escape') {
-            this.props.closeModal();
-        }
-    }
+  };
 
-    onBackdropClick = (e) => {
-        if (e.target === e.currentTarget) {
-            this.props.closeModal();
+  return (
+    <ModalBackdrop onClick={onBackdropClick}>
+      <ModalContent>
+        <img src={children} alt={tags} />
+      </ModalContent>
+    </ModalBackdrop>
+  );
+};
 
-        }
-    }
-
-  render() {
-    return (
-        <ModalBackdrop onClick={this.onBackdropClick}>
-            <ModalContent>
-                <img src={this.props.children} alt={this.props.tags} />
-            </ModalContent>
-        </ModalBackdrop>
-    )
-  }
-}
 Modal.propTypes = {
-    closeModal: PropTypes.func.isRequired,
-}
+  closeModal: PropTypes.func.isRequired,
+};
 
-export default Modal
+export default Modal;
